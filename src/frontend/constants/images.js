@@ -24,12 +24,14 @@ const no_profile_data = require("../assets/images/no_profile_data.png");
 const analysis = require("../assets/images/analysis.png");
 const no_saved_jobs = require("../assets/images/no_saved_jobs.png");
 const plant = require("../assets/images/plant.png");
+const discussion = require("../assets/images/discussion.png");
 
 
 export default {
     no_result,
     search_job,
     error,
+    discussion,
     resume,
     resume_folder,
     edit_resume,

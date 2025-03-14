@@ -36,6 +36,9 @@ import Step3 from './screens/stepper/Step3Screen';
 import OnboardingScreen from './screens/resume/OnboardingScreen';
 
 
+import InterviewScreen from './screens/interview/InterviewScreen';
+
+
 
 //profile edit screen
 import EditPersonalInfo from './screens/profile/editProfile/EditPersonalInfo';
@@ -226,6 +229,7 @@ const Navigator = () => {
           <Stack.Screen name="VideoPlayerScreen" component={VideoPlayerScreen} />
 
           <Stack.Screen name="InterviewPrepScreen" component={InterviewPrepScreen} />
+          <Stack.Screen name="InterviewScreen" component={InterviewScreen} />
           <Stack.Screen name="QuestBrowserScreen" component={QuestBrowserScreen} />
 
           <Stack.Screen

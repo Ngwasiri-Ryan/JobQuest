@@ -111,14 +111,35 @@ const rewind = require("../assets/icons/rewind.png");
 const expand = require("../assets/icons/expand.png");
 const link = require("../assets/icons/link.png");
 const replay = require("../assets/icons/replay.png");
+const asisstant = require("../assets/icons/assistant.png");
+const generate = require("../assets/icons/generate.png");
+const pen = require("../assets/icons/pen.png");
+const okay = require("../assets/icons/okay.png");
+const smiley = require("../assets/icons/smiley.png");
+const sad = require("../assets/icons/sad.png");
+const tick = require("../assets/icons/tick.png");
+const write = require("../assets/icons/write.png");
+const bolt = require("../assets/icons/bolt.png");
+const signal = require("../assets/icons/signal.png");
+
 
 export default {
     home,
     user,
+    okay,
+    bolt,
+    signal,
+    write,
+    tick,
+    sad,
+    smiley,
+    pen,
     town,
     newspaper,
+    asisstant,
     like,
     replay,
+    generate,
     link,
     right,
     description,

@@ -7,7 +7,7 @@ export const COLORS = {
     secondary: "#0269FE", // secondary blue
 
     // colors
-    black: "#1E1F20",
+    black: "#263238",
     white: "#FFFFFF",
 
     lightGray: "#F5F5F6",

@@ -235,7 +235,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     backgroundColor: COLORS.white, // Make sure the background is set
     padding: 20, // Add some padding for better touch targets
-    borderRadius: 10, // Optional: To give rounded corners
     ...Platform.select({
       ios: {
         shadowColor: '#000', // Color of the shadow
