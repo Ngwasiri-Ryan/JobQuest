@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   nextButton: {
-    backgroundColor: "#5E63FF",
+    backgroundColor: COLORS.black,
     borderRadius: 50,  // Makes it round
     padding: 15,  // Adjusted for better spacing
     justifyContent: "center",

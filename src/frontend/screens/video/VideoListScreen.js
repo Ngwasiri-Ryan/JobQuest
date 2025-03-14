@@ -2,10 +2,11 @@ import React from "react";
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, TextInput } from "react-native";
 import videos from "../../data/video";
 import { icons } from "../../constants";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const VideoListScreen = ({ navigation }) => {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -43,7 +44,7 @@ const VideoListScreen = ({ navigation }) => {
           </TouchableOpacity>
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

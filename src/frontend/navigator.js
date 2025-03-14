@@ -39,6 +39,9 @@ import OnboardingScreen from './screens/resume/OnboardingScreen';
 import InterviewScreen from './screens/interview/InterviewScreen';
 
 
+import MapScreen from './screens/maps/MapScreen';
+
+
 
 //profile edit screen
 import EditPersonalInfo from './screens/profile/editProfile/EditPersonalInfo';
@@ -247,6 +250,8 @@ const Navigator = () => {
           <Stack.Screen name="EditSkills" component={EditSkill} />
           <Stack.Screen name="EditLanguages" component={EditLanguages} />
           <Stack.Screen name="EditInterests" component={EditInterests} />
+
+          <Stack.Screen name="MapScreen" component={MapScreen} />
 
 
 
