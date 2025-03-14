@@ -134,7 +134,7 @@ const UserProfileScreen = ({ navigation }) => {
         {/* Interview Button */}
         <TouchableOpacity
           style={styles.interviewButton}
-          onPress={() => navigation.navigate('InterviewPrepScreen')}
+          onPress={() => navigation.navigate('InterviewScreen')}
         >
           <Text style={styles.interviewButtonText}>Prepare for Interview</Text>
         </TouchableOpacity>

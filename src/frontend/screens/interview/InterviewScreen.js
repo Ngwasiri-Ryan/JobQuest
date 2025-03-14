@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -10,13 +10,14 @@ import {
   StyleSheet,
 } from 'react-native';
 import axios from 'axios';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {COLORS, icons , images} from '../../constants'; // Ensure this path is correct
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { COLORS, icons, images } from '../../constants'; // Ensure this path is correct
 
 const API_KEY = 'AIzaSyBPvI-nkHg8DlJgCVcfI3lQXRZcTTcp7c4';
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-const InterviewScreen = () => {
+const InterviewScreen = ({ navigation }) => {
+  // State Management
   const [topic, setTopic] = useState('');
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
@@ -26,6 +27,7 @@ const InterviewScreen = () => {
   const [grade, setGrade] = useState(0);
   const [comment, setComment] = useState('');
 
+  // Fetch Interview Questions
   const fetchQuestions = async () => {
     setLoading(true);
     setShowQuestions(false);
@@ -34,11 +36,11 @@ const InterviewScreen = () => {
         GEMINI_API_URL,
         {
           contents: [
-            {parts: [{text: `Generate 10 interview questions on ${topic}.`}]},
+            { parts: [{ text: `Generate 10 interview questions on ${topic}.` }] },
           ],
         },
         {
-          headers: {'Content-Type': 'application/json'},
+          headers: { 'Content-Type': 'application/json' },
         },
       );
 
@@ -59,12 +61,14 @@ const InterviewScreen = () => {
     setLoading(false);
   };
 
+  // Handle Answer Input Change
   const handleAnswerChange = (index, answer) => {
     const updatedAnswers = [...answers];
     updatedAnswers[index] = answer;
     setAnswers(updatedAnswers);
   };
 
+  // Submit Answers for Grading
   const submitAnswers = async () => {
     setLoading(true);
     try {
@@ -86,7 +90,7 @@ const InterviewScreen = () => {
           ],
         },
         {
-          headers: {'Content-Type': 'application/json'},
+          headers: { 'Content-Type': 'application/json' },
         },
       );
 
@@ -103,7 +107,6 @@ const InterviewScreen = () => {
 
       setGrade(grade);
       setComment(comment);
-
       setGraded(true);
     } catch (error) {
       console.error('Error grading answers:', error);
@@ -111,24 +114,17 @@ const InterviewScreen = () => {
     setLoading(false);
   };
 
-  const getColorForGrade = grade => {
-    if (grade >= 90) {
-      return '#31cf71';
-    } else if (grade >= 70) {
-      return '#FFC107';
-    } else {
-      return '#DC3545';
-    }
+  // Helper Functions
+  const getColorForGrade = (grade) => {
+    if (grade >= 90) return '#31cf71';
+    if (grade >= 70) return '#FFC107';
+    return '#DC3545';
   };
 
-  const getRemarksForGrade = grade => {
-    if (grade >= 90) {
-      return 'Excellent work! Keep it up!';
-    } else if (grade >= 70) {
-      return "Good job! But there's room for improvement.";
-    } else {
-      return "Don't worry, you can do better! Review your answers.";
-    }
+  const getRemarksForGrade = (grade) => {
+    if (grade >= 90) return 'Excellent work! Keep it up!';
+    if (grade >= 70) return "Good job! But there's room for improvement.";
+    return "Don't worry, you can do better! Review your answers.";
   };
 
   const calculateXP = (grade) => {
@@ -138,6 +134,7 @@ const InterviewScreen = () => {
 
   const xp = calculateXP(grade);
 
+  // Reset to Default State
   const goBackToDefault = () => {
     setTopic('');
     setQuestions([]);
@@ -148,16 +145,21 @@ const InterviewScreen = () => {
     setShowQuestions(false);
   };
 
+  const goBack = () =>{
+    setShowQuestions(false);
+  }
+
+  // Render Components
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{paddingVertical: 10, flex: 1}}>
+      <View style={{ paddingVertical: 10, flex: 1 }}>
         <Text style={styles.header}>Interview Preparation</Text>
 
         {!graded ? (
           !showQuestions ? (
             // Initial View
             <View style={styles.initialContainer}>
-              <Image source={icons.asisstant} style={styles.icon} />
+              <Image source={icons.asisstant} style={styles.chat} />
               <Text style={styles.introText}>
                 Get your interview skills tested with AI
               </Text>
@@ -166,20 +168,8 @@ const InterviewScreen = () => {
                 responses and give you a grading
               </Text>
 
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  gap: 5,
-                  alignItems: 'center',
-                  backgroundColor: COLORS.white,
-                  borderRadius: 40,
-                  paddingHorizontal: 20,
-                  paddingVertical: 10,
-                  marginTop: 10,
-                  marginBottom: 20,
-                }}>
-                <Image source={icons.pen} style={{height: 25, width: 25}} />
+              <View style={styles.inputContainer}>
+                <Image source={icons.pen} style={styles.inputIcon} />
                 <TextInput
                   style={styles.textInput}
                   placeholder="Enter a topic"
@@ -192,25 +182,23 @@ const InterviewScreen = () => {
               <TouchableOpacity
                 onPress={fetchQuestions}
                 style={styles.button}
-                disabled={loading} // Disable button when loading
+                disabled={loading}
               >
                 {loading ? (
                   <ActivityIndicator size="small" color="#FFF" />
                 ) : (
-                  <View
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      gap: 10,
-                      alignItems: 'center',
-                    }}>
+                  <View style={styles.buttonContent}>
                     <Text style={styles.buttonText}>Generate Questions</Text>
-                    <Image
-                      source={icons.generate}
-                      style={{height: 20, width: 20}}
-                    />
+                    <Image source={icons.generate} style={styles.buttonIcon} />
                   </View>
                 )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => navigation.navigate('InterviewPrepScreen')}
+                style={styles.flashCardButton}
+              >
+                <Text style={styles.flashCardButtonText}>Use flash cards</Text>
               </TouchableOpacity>
 
               <View style={styles.footer}>
@@ -218,37 +206,22 @@ const InterviewScreen = () => {
               </View>
             </View>
           ) : (
-            // ScrollView with Questions and Answers Input
+            // Questions and Answers View
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'rgba(20, 174, 92, 0.27)',
-                }}>
+              <View style={styles.chatHeader}>
+                <TouchableOpacity onPress={goBack}>
+                  <Image source={icons.back} style={styles.backIcon} />
+                </TouchableOpacity>
                 <Image source={icons.chatbot} style={styles.chatIcon} />
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: COLORS.black,
-                    fontStyle: 'italic',
-                    padding: 20,
-                  }}>
-                  Let's get this interview started !
+                <Text style={styles.chatHeaderText}>
+                  Let's get this interview started!
                 </Text>
               </View>
-              <Text
-                style={{
-                  fontSize: 18,
-                  color: COLORS.black,
-                  fontStyle: 'italic',
-                  padding: 20,
-                }}>
-                Answer these interview questions according so the bot can grade
-                it accordingly
+
+              <Text style={styles.instructionsText}>
+                Answer these interview questions so the bot can grade them accordingly.
               </Text>
+
               {loading && (
                 <ActivityIndicator
                   size="large"
@@ -257,30 +230,30 @@ const InterviewScreen = () => {
                 />
               )}
 
-              {questions.length > 0 &&
-                questions.map((q, index) => (
-                  <View key={index} style={styles.questionContainer}>
-                    <Text style={styles.questionText}>{q}</Text>
-                    <TextInput
-                      style={[styles.answerInput, {height: 100}]}
-                      placeholder="Type your answer..."
-                      placeholderTextColor="#888"
-                      multiline
-                      value={answers[index]}
-                      onChangeText={text => handleAnswerChange(index, text)}
-                    />
-                    <Image
-                      source={answers[index] ? icons.tick : icons.write}
-                      style={styles.questionIcon}
-                    />
-                  </View>
-                ))}
+              {questions.map((q, index) => (
+                <View key={index} style={styles.questionContainer}>
+                  <Text style={styles.questionText}>{q}</Text>
+                  <TextInput
+                    style={styles.answerInput}
+                    placeholder="Type your answer..."
+                    placeholderTextColor="#888"
+                    multiline
+                    value={answers[index]}
+                    onChangeText={(text) => handleAnswerChange(index, text)}
+                  />
+                  <Image
+                    source={answers[index] ? icons.tick : icons.write}
+                    style={styles.questionIcon}
+                  />
+                </View>
+              ))}
 
-              <View style={{justifyContent: 'center', alignItems: 'center'}}>
+              <View style={styles.submitButtonContainer}>
                 <TouchableOpacity
                   onPress={submitAnswers}
                   style={styles.button}
-                  disabled={loading}>
+                  disabled={loading}
+                >
                   {loading ? (
                     <ActivityIndicator size="small" color="#FFF" />
                   ) : (
@@ -291,110 +264,34 @@ const InterviewScreen = () => {
             </ScrollView>
           )
         ) : (
-          // Graded View with Feedback
+          // Graded View
           <View style={styles.evaluationContainer}>
-            <Text
-              style={{
-                fontSize: 40,
-                fontWeight: 'bold',
-                textAlign: 'center',
-                marginVertical: 10,
-                color: '#333',
-              }}>
-              Interview Complete
-            </Text>
-            {/* Icon based on the grade */}
+            <Text style={styles.evaluationHeader}>Interview Complete</Text>
             <Image source={images.discussion} style={styles.emojiSize} />
 
-            <View></View>
-
-            {/* Remarks based on grade */}
             <Text style={styles.remarksText}>{getRemarksForGrade(grade)}</Text>
 
-            <View style={{marginTop:20}}>
-            <View
-              style={{
-                borderWidth: 2,
-                borderRightColor: COLORS.black,
-                width: '100%',
-                paddingVertical: 20,
-                paddingHorizontal: 20,
-                borderRadius: 40,
-                alignSelf: 'center',
-                marginTop: 20,
-                flexDirection: 'row',
-                display: 'flex',
-                justifyContent: 'space-between',
-              }}>
-              <Text
-                style={{
-                  color: '#333',
-                  fontSize: 20,
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                }}>
-                INTERVIEW SCORE
-              </Text>
-              <View style={{display:'flex', flexDirection:'row', gap:3, justifyContent:'center', alignItems:'center'}}>
-              <Image source={icons.signal} style={[styles.smallIcon, {tintColor:getColorForGrade(grade)}]} />
-              <Text
-                style={{
-                    color: getColorForGrade(grade),
-                  fontSize: 22,
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                  
-                }}>
-                {grade}%
-              </Text>
+            <View style={styles.scoreContainer}>
+              <Text style={styles.scoreLabel}>INTERVIEW SCORE</Text>
+              <View style={styles.scoreValueContainer}>
+                <Image
+                  source={icons.signal}
+                  style={[styles.smallIcon, { tintColor: getColorForGrade(grade) }]}
+                />
+                <Text style={[styles.scoreValue, { color: getColorForGrade(grade) }]}>
+                  {grade}%
+                </Text>
               </View>
-              
             </View>
 
-            <View
-              style={{
-                borderWidth: 2,
-                borderRightColor: COLORS.black,
-                width: '100%',
-                paddingVertical: 20,
-                paddingHorizontal: 20,
-                borderRadius: 40,
-                alignSelf: 'center',
-                marginTop: 20,
-                flexDirection: 'row',
-                display: 'flex',
-                justifyContent: 'space-between',
-              }}>
-                
-              <Text
-                style={{
-                  color: '#333',
-                  fontSize: 20,
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                }}>
-                INTERVIEW XP
-              </Text>
-              <View style={{display:'flex', flexDirection:'row', gap:3, justifyContent:'center', alignItems:'center'}}>
-              <Image source={icons.bolt} style={styles.smallIcon} />
-              <Text
-                style={{
-                  color: '#ffcd29',
-                  fontSize: 20,
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                }}>
-                {xp} XP
-              </Text>
+            <View style={styles.xpContainer}>
+              <Text style={styles.xpLabel}>INTERVIEW XP</Text>
+              <View style={styles.xpValueContainer}>
+                <Image source={icons.bolt} style={styles.smallIcon} />
+                <Text style={styles.xpValue}>{xp} XP</Text>
               </View>
-            
             </View>
 
-            </View>
-
-           
-
-            {/* Ok Button */}
             <TouchableOpacity onPress={goBackToDefault} style={styles.okButton}>
               <Text style={styles.okButtonText}>Okay</Text>
             </TouchableOpacity>
@@ -405,6 +302,7 @@ const InterviewScreen = () => {
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -428,6 +326,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  chat:{
+    height:200,
+    width:200,
+  },
   introText: {
     fontSize: 19,
     color: '#333',
@@ -443,6 +345,26 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 15,
     paddingHorizontal: 30,
+  },
+  backIcon:{
+    height:25,
+    width:30,
+    left:-40
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    gap: 5,
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    borderRadius: 40,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  inputIcon: {
+    height: 25,
+    width: 25,
   },
   textInput: {
     width: '80%',
@@ -461,15 +383,43 @@ const styles = StyleSheet.create({
     marginTop: 15,
     width: '80%',
   },
+  buttonContent: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+  },
   buttonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
-  icon: {
-    width: 200,
-    height: 200,
-    marginBottom: 20,
+  buttonIcon: {
+    height: 20,
+    width: 20,
+  },
+  flashCardButton: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: '#263238',
+    borderRadius: 40,
+    width: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  flashCardButtonText: {
+    color: COLORS.lightGray,
+    fontSize: 17,
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 14,
+    color: '#888',
   },
   questionContainer: {
     backgroundColor: '#fff',
@@ -494,6 +444,7 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
     color: '#000',
+    height: 100,
   },
   loadingIndicator: {
     marginVertical: 20,
@@ -508,14 +459,14 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.2,
     width: '100%',
-    height:'100%'
+    height: '100%',
   },
-  scoreText: {
-    fontSize: 30,
+  evaluationHeader: {
+    fontSize: 40,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 10,
-    fontFamily: 'Arial',
+    marginVertical: 10,
+    color: '#333',
   },
   remarksText: {
     fontSize: 16,
@@ -523,6 +474,65 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: 'center',
     fontStyle: 'italic',
+  },
+  scoreContainer: {
+    borderWidth: 2,
+    borderRightColor: COLORS.black,
+    width: '100%',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 40,
+    alignSelf: 'center',
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  scoreLabel: {
+    color: '#333',
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  scoreValueContainer: {
+    flexDirection: 'row',
+    gap: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scoreValue: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  xpContainer: {
+    borderWidth: 2,
+    borderRightColor: COLORS.black,
+    width: '100%',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 40,
+    alignSelf: 'center',
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  xpLabel: {
+    color: '#333',
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  xpValueContainer: {
+    flexDirection: 'row',
+    gap: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  xpValue: {
+    color: '#ffcd29',
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   okButton: {
     backgroundColor: '#263238',
@@ -535,27 +545,32 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5,
     elevation: 3,
-     width:'100%',
-     bottom:5,
-     position:'absolute'
+    width: '100%',
+    bottom: 5,
+    position: 'absolute',
   },
   okButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
-   
   },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    paddingVertical: 10,
+  chatHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(20, 174, 92, 0.27)',
   },
-
-  footerText: {
-    fontSize: 14,
-    color: '#888',
+  chatHeaderText: {
+    fontSize: 16,
+    color: COLORS.black,
+    fontStyle: 'italic',
+    padding: 20,
+  },
+  instructionsText: {
+    fontSize: 18,
+    color: COLORS.black,
+    fontStyle: 'italic',
+    padding: 20,
   },
   questionIcon: {
     height: 20,
@@ -574,6 +589,10 @@ const styles = StyleSheet.create({
   smallIcon: {
     height: 30,
     width: 30,
+  },
+  submitButtonContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
