@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -10,13 +10,13 @@ import {
   StyleSheet,
 } from 'react-native';
 import axios from 'axios';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { COLORS, icons, images } from '../../constants'; // Ensure this path is correct
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {COLORS, icons, images} from '../../constants'; // Ensure this path is correct
 
 const API_KEY = 'AIzaSyBPvI-nkHg8DlJgCVcfI3lQXRZcTTcp7c4';
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-const InterviewScreen = ({ navigation }) => {
+const InterviewScreen = ({navigation}) => {
   // State Management
   const [topic, setTopic] = useState('');
   const [questions, setQuestions] = useState([]);
@@ -36,11 +36,11 @@ const InterviewScreen = ({ navigation }) => {
         GEMINI_API_URL,
         {
           contents: [
-            { parts: [{ text: `Generate 10 interview questions on ${topic}.` }] },
+            {parts: [{text: `Generate 10 interview questions on ${topic}.`}]},
           ],
         },
         {
-          headers: { 'Content-Type': 'application/json' },
+          headers: {'Content-Type': 'application/json'},
         },
       );
 
@@ -90,7 +90,7 @@ const InterviewScreen = ({ navigation }) => {
           ],
         },
         {
-          headers: { 'Content-Type': 'application/json' },
+          headers: {'Content-Type': 'application/json'},
         },
       );
 
@@ -115,19 +115,19 @@ const InterviewScreen = ({ navigation }) => {
   };
 
   // Helper Functions
-  const getColorForGrade = (grade) => {
+  const getColorForGrade = grade => {
     if (grade >= 90) return '#31cf71';
     if (grade >= 70) return '#FFC107';
     return '#DC3545';
   };
 
-  const getRemarksForGrade = (grade) => {
+  const getRemarksForGrade = grade => {
     if (grade >= 90) return 'Excellent work! Keep it up!';
     if (grade >= 70) return "Good job! But there's room for improvement.";
     return "Don't worry, you can do better! Review your answers.";
   };
 
-  const calculateXP = (grade) => {
+  const calculateXP = grade => {
     const maxXP = 1000;
     return Math.round((grade / 100) * maxXP);
   };
@@ -145,15 +145,23 @@ const InterviewScreen = ({ navigation }) => {
     setShowQuestions(false);
   };
 
-  const goBack = () =>{
+  const goBack = () => {
     setShowQuestions(false);
-  }
+  };
 
   // Render Components
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ paddingVertical: 10, flex: 1 }}>
-        <Text style={styles.header}>Interview Preparation</Text>
+      <View style={{paddingVertical: 10, flex: 1}}>
+        <View style={styles.header}>
+        <TouchableOpacity onPress={()=> navigation.goBack()}>
+            <Image source={icons.back} style={styles.back} />
+          </TouchableOpacity>
+          <View style={styles.headerBox}>
+          <Text style={styles.headerText}>Interview Preparation</Text>  
+          </View>
+          
+        </View>
 
         {!graded ? (
           !showQuestions ? (
@@ -182,8 +190,7 @@ const InterviewScreen = ({ navigation }) => {
               <TouchableOpacity
                 onPress={fetchQuestions}
                 style={styles.button}
-                disabled={loading}
-              >
+                disabled={loading}>
                 {loading ? (
                   <ActivityIndicator size="small" color="#FFF" />
                 ) : (
@@ -196,8 +203,7 @@ const InterviewScreen = ({ navigation }) => {
 
               <TouchableOpacity
                 onPress={() => navigation.navigate('InterviewPrepScreen')}
-                style={styles.flashCardButton}
-              >
+                style={styles.flashCardButton}>
                 <Text style={styles.flashCardButtonText}>Use flash cards</Text>
               </TouchableOpacity>
 
@@ -219,7 +225,8 @@ const InterviewScreen = ({ navigation }) => {
               </View>
 
               <Text style={styles.instructionsText}>
-                Answer these interview questions so the bot can grade them accordingly.
+                Answer these interview questions so the bot can grade them
+                accordingly.
               </Text>
 
               {loading && (
@@ -239,7 +246,7 @@ const InterviewScreen = ({ navigation }) => {
                     placeholderTextColor="#888"
                     multiline
                     value={answers[index]}
-                    onChangeText={(text) => handleAnswerChange(index, text)}
+                    onChangeText={text => handleAnswerChange(index, text)}
                   />
                   <Image
                     source={answers[index] ? icons.tick : icons.write}
@@ -252,8 +259,7 @@ const InterviewScreen = ({ navigation }) => {
                 <TouchableOpacity
                   onPress={submitAnswers}
                   style={styles.button}
-                  disabled={loading}
-                >
+                  disabled={loading}>
                   {loading ? (
                     <ActivityIndicator size="small" color="#FFF" />
                   ) : (
@@ -276,9 +282,13 @@ const InterviewScreen = ({ navigation }) => {
               <View style={styles.scoreValueContainer}>
                 <Image
                   source={icons.signal}
-                  style={[styles.smallIcon, { tintColor: getColorForGrade(grade) }]}
+                  style={[
+                    styles.smallIcon,
+                    {tintColor: getColorForGrade(grade)},
+                  ]}
                 />
-                <Text style={[styles.scoreValue, { color: getColorForGrade(grade) }]}>
+                <Text
+                  style={[styles.scoreValue, {color: getColorForGrade(grade)}]}>
                   {grade}%
                 </Text>
               </View>
@@ -312,23 +322,35 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
   },
   header: {
-    fontSize: 20,
-    color: COLORS.black,
-    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'row',
     paddingVertical: 15,
+    paddingHorizontal:15,
     backgroundColor: COLORS.white,
     zIndex: 20,
     width: '100%',
     position: 'relative',
+  },
+  headerText: {
+    fontSize: 20,
+    color: COLORS.black,
+   
+  },
+  headerBox:{
+    display:'flex',
+    flexDirection:'row',
+    textAlign: 'center',
+    justifyContent:'center',
+    width:'100%'
   },
   initialContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  chat:{
-    height:200,
-    width:200,
+  chat: {
+    height: 200,
+    width: 200,
   },
   introText: {
     fontSize: 19,
@@ -346,10 +368,14 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingHorizontal: 30,
   },
-  backIcon:{
-    height:25,
-    width:30,
-    left:-40
+  backIcon: {
+    height: 25,
+    width: 30,
+    left: -40,
+  },
+  back: {
+    height: 25,
+    width: 30,
   },
   inputContainer: {
     flexDirection: 'row',
