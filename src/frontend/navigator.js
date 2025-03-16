@@ -26,7 +26,7 @@ import Loader from './components/loading/Loader';
 import ResumeMakerScreen from './screens/resume/ResumeMaker';
 import ResumePreviewScreen from './screens/resume/ResumePreviewerScreen';
 //code breaks from here
-//import ResumePDFScreen from './screens/resume/ResumePDFScreen';
+import ResumePDFScreen from './screens/resume/ResumePDFScreen';
 
 
 import Step1 from './screens/stepper/Step1Screen';
@@ -252,6 +252,8 @@ const Navigator = () => {
           <Stack.Screen name="EditInterests" component={EditInterests} />
 
           <Stack.Screen name="MapScreen" component={MapScreen} />
+
+          <Stack.Screen name="pdfViewer" component={ResumePDFScreen} />
 
 
 
