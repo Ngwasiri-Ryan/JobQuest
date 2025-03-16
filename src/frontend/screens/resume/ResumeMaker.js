@@ -71,59 +71,80 @@ const ResumeMakerScreen = ({ navigation }) => {
   const username = userData.username;
   const [sections, setSections] = useState(initialData);
 
-  const addItem = (sectionIndex) => {
-    const newSections = [...sections];
-    const currentSection = newSections[sectionIndex];
-    let newItem;
-
-    if (
-      currentSection.title === "Skills" ||
-      currentSection.title === "Languages" ||
-      currentSection.title === "Interests"
-    ) {
-      newItem = "";
-    } else if (currentSection.title === "Projects") {
-      newItem = { projectName: "", projectDescription: "" };
-    } else if (currentSection.title === "Education") {
-      newItem = { institution: "", degree: "", duration: "" };
-    } else if (currentSection.title === "Certifications") {
-      newItem = { name: "", institution: "", duration: "" };
-    } else {
-      newItem = {
-        jobTitle: "",
-        company: "",
-        location: "",
-        date: "",
-        description: "",
-      };
-    }
-
-    currentSection.items.push(newItem);
-    setSections(newSections);
+  const defaultItems = {
+    Skills: "",
+    Languages: "",
+    Interests: "",
+    Projects: { projectName: "", projectDescription: "" },
+    Education: { institution: "", degree: "", duration: "" },
+    Certifications: { name: "", institute: "", duration: "" },
+    "Work Experience": { jobTitle: "", company: "", location: "", date: "", description: "" },
   };
+  
+  const addItem = (sectionIndex) => {
+    setSections((prevSections) => {
+      return prevSections.map((section, sIndex) => {
+        if (sIndex !== sectionIndex) return section;
+  
+        let newItem;
+        if (["Skills", "Languages", "Interests"].includes(section.title)) {
+          newItem = "";
+        } else if (section.title === "Projects") {
+          newItem = { projectName: "", projectDescription: "" };
+        } else if (section.title === "Education") {
+          newItem = { institution: "", degree: "", duration: "" };
+        } else if (section.title === "Certifications") {
+          newItem = { name: "", institute: "", duration: "" };
+        } else {
+          newItem = {
+            jobTitle: "",
+            company: "",
+            location: "",
+            date: "",
+            description: "",
+          };
+        }
+  
+        return { ...section, items: [...section.items, newItem] };
+      });
+    });
+  };
+  
 
   const handleChange = (sectionIndex, itemIndex, field, value) => {
-    const newSections = [...sections];
-    const currentItem = newSections[sectionIndex].items[itemIndex];
-
-    if (
-      newSections[sectionIndex].title === "Skills" ||
-      newSections[sectionIndex].title === "Languages" ||
-      newSections[sectionIndex].title === "Interests"
-    ) {
-      newSections[sectionIndex].items[itemIndex] = value;
-    } else {
-      currentItem[field] = value;
-    }
-
-    setSections(newSections);
+    setSections((prevSections) => {
+      return prevSections.map((section, sIndex) => {
+        if (sIndex !== sectionIndex) return section; // Keep other sections unchanged
+  
+        return {
+          ...section,
+          items: section.items.map((item, iIndex) => {
+            if (iIndex !== itemIndex) return item; // Keep other items unchanged
+  
+            if (typeof item === "string") {
+              return value; // Handle text arrays like Skills, Interests, Languages
+            } else {
+              return { ...item, [field]: value }; // Update the field correctly
+            }
+          }),
+        };
+      });
+    });
   };
-
+  
   const removeItem = (sectionIndex, itemIndex) => {
-    const newSections = [...sections];
-    newSections[sectionIndex].items.splice(itemIndex, 1);
-    setSections(newSections);
+    setSections((prevSections) => {
+      return prevSections.map((section, sIndex) => {
+        if (sIndex !== sectionIndex) return section;
+  
+        return {
+          ...section,
+          items: section.items.filter((_, iIndex) => iIndex !== itemIndex),
+        };
+      });
+    });
   };
+  
 
   const handleSaveResume = async () => {
     const resumeData = {
@@ -137,8 +158,7 @@ const ResumeMakerScreen = ({ navigation }) => {
       interests: sections[7].items,
     };
 
-    try {
-     
+    try {     
       // await saveIndependentCollections(username, resumeData);
       alert("You acn now preview your resume");
       navigation.navigate('ResumePreviewScreen',{resumeData:sections})
