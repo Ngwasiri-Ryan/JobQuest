@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'; 
 import { View, Text, StyleSheet, Dimensions, Image, FlatList } from 'react-native';
 import { useUserContext } from '../../hooks/UserContext';
-import { fetchAppliedJobs } from '../../backend/history/appliedJobs';
+import { fetchAppliedJobs } from '../../../backend/history/appliedJobs';
 import { FONTS, icons } from '../../constants';
 
 const { width, height } = Dimensions.get('window');

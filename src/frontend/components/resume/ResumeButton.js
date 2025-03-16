@@ -10,8 +10,8 @@ import {
   Image,
 } from "react-native";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
-import { fetchResumeData } from "../../backend/resume/fetchData";
-import { COLORS, icons } from "../../constants";
+import { fetchResumeData } from "../../../backend/resume/fetchData";
+import { COLORS,icons } from "../../constants";
 import RNFS from "react-native-fs";
 import Share from "react-native-share";
 
@@ -200,12 +200,14 @@ const GenerateResumeButton = ({ username }) => {
         {loading ? (
           <ActivityIndicator color={COLORS.primary} size="small" />
         ) : (
-          <Image source={icons.download} style={styles.icon} />
+          <Image source={icons.download} style={styles.shareIcon}/>
         )}
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.shareButton} onPress={handleShareResume}>
-        <Image source={icons.sharing} style={styles.shareIcon} />
+       
+       <Image source={icons.share} style={styles.shareIcon}/>
+        
       </TouchableOpacity>
     </View>
   );
