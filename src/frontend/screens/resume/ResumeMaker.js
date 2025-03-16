@@ -170,185 +170,142 @@ const ResumeMakerScreen = ({ navigation }) => {
 
   const renderSectionItem = ({ item, index, sectionIndex }) => {
     return (
-      
       <View style={styles.itemContainer}>
         {sections[sectionIndex].title === 'Personal Details' ? (
           <>
-            <TextInput
-              placeholder="Name"
-              value={item.name}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'name', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Phone"
-              value={item.phone}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'phone', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Email"
-              value={item.email}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'email', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Country"
-              value={item.country}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'country', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="City"
-              value={item.city}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'city', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Town"
-              value={item.town}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'town', value)} 
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Summary"
-              value={item.summary || ''}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'summary', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={[styles.input, styles.descriptionInput]}
-              multiline
-              numberOfLines={8}
-            />
+            {[
+              { key: 'name', placeholder: 'Name', icon: icons.user },
+              { key: 'phone', placeholder: 'Phone', icon: icons.phone },
+              { key: 'email', placeholder: 'Email', icon: icons.mail },
+              { key: 'country', placeholder: 'Country', icon: icons.globe },
+              { key: 'city', placeholder: 'City', icon: icons.location },
+              { key: 'town', placeholder: 'Town', icon: icons.town },
+            ].map(({ key, placeholder, icon }) => (
+              <View key={key} style={styles.inputRow}>
+                <Image source={icon} style={styles.inputIcon} />
+                <TextInput
+                  placeholder={placeholder}
+                  value={item[key]}
+                  onChangeText={(value) => handleChange(sectionIndex, index, key, value)}
+                  placeholderTextColor={COLORS.darkgray}
+                  style={styles.input}
+                />
+              </View>
+            ))}
+            <View style={styles.inputRow}>
+              <Image source={icons.pen} style={styles.inputIcon} />
+              <TextInput
+                placeholder="Summary"
+                value={item.summary || ''}
+                onChangeText={(value) => handleChange(sectionIndex, index, 'summary', value)}
+                placeholderTextColor={COLORS.darkgray}
+                style={[styles.input, styles.descriptionInput]}
+                multiline
+                numberOfLines={8}
+              />
+            </View>
           </>
         ) : sections[sectionIndex].title === 'Skills' || sections[sectionIndex].title === 'Languages' || sections[sectionIndex].title === 'Interests' ? (
-          <TextInput
-            placeholder={sections[sectionIndex].title}
-            value={item}
-            onChangeText={(value) => handleChange(sectionIndex, index, null, value)}
-            placeholderTextColor={COLORS.darkgray}
-            style={styles.inputSkill}
-          />
+          <View style={styles.inputRow}>
+           <Image source={icons[sections[sectionIndex].title.toLowerCase()] || icons.default} style={styles.inputIcon} />
+
+            <TextInput
+              placeholder={sections[sectionIndex].title}
+              value={item}
+              onChangeText={(value) => handleChange(sectionIndex, index, null, value)}
+              placeholderTextColor={COLORS.darkgray}
+              style={styles.inputSkill}
+            />
+          </View>
         ) : sections[sectionIndex].title === 'Education' ? (
           <>
-            <TextInput
-              placeholder="Institution"
-              value={item.institution || ''}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'institution', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Degree"
-              value={item.degree || ''}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'degree', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Duration"
-              value={item.duration || ''}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'duration', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
+            {[
+              { key: 'institution', placeholder: 'Institution', icon: icons.school },
+              { key: 'degree', placeholder: 'Degree', icon: icons.degree },
+              { key: 'duration', placeholder: 'Duration', icon: icons.calendar },
+            ].map(({ key, placeholder, icon }) => (
+              <View key={key} style={styles.inputRow}>
+                <Image source={icon} style={styles.inputIcon} />
+                <TextInput
+                  placeholder={placeholder}
+                  value={item[key] || ''}
+                  onChangeText={(value) => handleChange(sectionIndex, index, key, value)}
+                  placeholderTextColor={COLORS.darkgray}
+                  style={styles.input}
+                />
+              </View>
+            ))}
           </>
         ) : sections[sectionIndex].title === 'Certifications' ? (
           <>
-            <TextInput
-              placeholder="Certification Name"
-              value={item.name || ''}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'name', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Institute"
-              value={item.institute || ''}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'institute', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Duration"
-              value={item.duration || ''}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'duration', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-            
+            {[
+              { key: 'name', placeholder: 'Certification Name', icon: icons.certificate },
+              { key: 'institute', placeholder: 'Institute', icon: icons.institute },
+              { key: 'duration', placeholder: 'Duration', icon: icons.calendar },
+            ].map(({ key, placeholder, icon }) => (
+              <View key={key} style={styles.inputRow}>
+                <Image source={icon} style={styles.inputIcon} />
+                <TextInput
+                  placeholder={placeholder}
+                  value={item[key] || ''}
+                  onChangeText={(value) => handleChange(sectionIndex, index, key, value)}
+                  placeholderTextColor={COLORS.darkgray}
+                  style={styles.input}
+                />
+              </View>
+            ))}
           </>
         ) : sections[sectionIndex].title === 'Projects' ? (
           <>
-            <TextInput
-              placeholder="Project Name"
-              value={item.projectName || ''}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'projectName', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Project Description"
-              value={item.projectDescription || ''}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'projectDescription', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={[styles.input, styles.descriptionInput]}
-              multiline
-              numberOfLines={3}
-            />
+            {[
+              { key: 'projectName', placeholder: 'Project Name', icon: icons.project },
+              { key: 'projectDescription', placeholder: 'Project Description', icon: icons.description },
+            ].map(({ key, placeholder, icon }) => (
+              <View key={key} style={styles.inputRow}>
+                <Image source={icon} style={styles.inputIcon} />
+                <TextInput
+                  placeholder={placeholder}
+                  value={item[key] || ''}
+                  onChangeText={(value) => handleChange(sectionIndex, index, key, value)}
+                  placeholderTextColor={COLORS.darkgray}
+                  style={key === 'projectDescription' ? [styles.input, styles.descriptionInput] : styles.input}
+                  multiline={key === 'projectDescription'}
+                  numberOfLines={key === 'projectDescription' ? 3 : 1}
+                />
+              </View>
+            ))}
           </>
         ) : (
           <>
-            <TextInput
-              placeholder="Job Title"
-              value={item.jobTitle || ''}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'jobTitle', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Company Name"
-              value={item.company || ''}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'company', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-             <TextInput
-              placeholder="Company Location (eg Ney York, US)"
-              value={item.location || ''}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'location', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Dates (e.g. Jan 2020 - Present)"
-              value={item.date || ''}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'date', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Description"
-              value={item.description || ''}
-              onChangeText={(value) => handleChange(sectionIndex, index, 'description', value)}
-              placeholderTextColor={COLORS.darkgray}
-              style={[styles.input, styles.descriptionInput]}
-              multiline
-              numberOfLines={3}
-            />
+            {[
+              { key: 'jobTitle', placeholder: 'Job Title', icon: icons.job },
+              { key: 'company', placeholder: 'Company Name', icon: icons.profile },
+              { key: 'location', placeholder: 'Company Location (e.g., New York, US)', icon: icons.location },
+              { key: 'date', placeholder: 'Dates (e.g., Jan 2020 - Present)', icon: icons.calendar },
+              { key: 'description', placeholder: 'Description', icon: icons.description },
+            ].map(({ key, placeholder, icon }) => (
+              <View key={key} style={styles.inputRow}>
+                <Image source={icon} style={styles.inputIcon} />
+                <TextInput
+                  placeholder={placeholder}
+                  value={item[key] || ''}
+                  onChangeText={(value) => handleChange(sectionIndex, index, key, value)}
+                  placeholderTextColor={COLORS.darkgray}
+                  style={key === 'description' ? [styles.input, styles.descriptionInput] : styles.input}
+                  multiline={key === 'description'}
+                  numberOfLines={key === 'description' ? 3 : 1}
+                />
+              </View>
+            ))}
           </>
         )}
         <TouchableOpacity onPress={() => removeItem(sectionIndex, index)} style={styles.removeItemButton}>
-          <Image style={[styles.icon, {tintColor:'red'}]} source={icons.trash} />
+          <Image style={[styles.icon, { tintColor: 'red' }]} source={icons.trash} />
         </TouchableOpacity>
       </View>
     );
   };
+  
 
 
   const renderSection = ({ item, index }) => {
@@ -379,6 +336,9 @@ const ResumeMakerScreen = ({ navigation }) => {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Resume Builder</Text>
       </View>
+      <View style={styles.first}>
+        <Text style={styles.firstText}>Creating your proffesional profile and resume requires you filling out this info 📃</Text>
+      </View>
       <View style={styles.container}>
         <FlatList
           data={sections}
@@ -397,10 +357,40 @@ const ResumeMakerScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  first:{
+   marginHorizontal:23,
+    backgroundColor:'#f4f4f4', 
+  },
+  inputIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+    tintColor: COLORS.primary,
+  },
+  firstText:{
+   fontSize:16,
+   },
   container: {
     flex: 1,
-    padding:20,
+    padding:15,
     backgroundColor: '#f4f4f4', // Light background color
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    paddingVertical: 8,
+    borderBottomWidth:1,
+    borderBottomColor:COLORS.black
+  },
+  inputIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+    tintColor: COLORS.black,
+  },
+  descriptionInput: {
+    minHeight: 60,
   },
   section: {
     marginBottom: 20,
@@ -414,7 +404,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
   },
   sectionHeader: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.black,
     padding: 10,
   },
   header: {
@@ -476,16 +466,12 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   input: {
-    borderBottomWidth:1,
-    borderRadius: 8,
     padding: 10,
     marginBottom: 10,
     backgroundColor: '#fff',
     color:COLORS.black,
   },
   inputSkill: {
-    borderBottomWidth:1,
-    borderRadius: 8,
     padding: 10,
     marginBottom: 10,
     backgroundColor: '#fff',
@@ -521,7 +507,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   saveButton:{
-    backgroundColor:COLORS.primary,
+    backgroundColor:COLORS.green,
     padding:20,
     justifyContent:'center',
     alignItems:'center',

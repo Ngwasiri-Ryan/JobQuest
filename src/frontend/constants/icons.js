@@ -53,6 +53,7 @@ const eyeOff = require("../assets/icons/eyeOff.png");
 const lock = require("../assets/icons/lock.png");
 
 const language = require("../assets/icons/language.png");
+const languages = require("../assets/icons/language.png");
 const skill = require("../assets/icons/skill.png");
 const certification = require('../assets/icons/education.png');
 const education = require('../assets/icons/cetificate.png')
@@ -61,6 +62,7 @@ const identity = require("../assets/icons/identity.png");
 const id_card = require("../assets/icons/id-card.png");
 const download = require("../assets/icons/download.png");
 const interest = require("../assets/icons/interest.png");
+const interests = require("../assets/icons/interest.png");
 const project = require("../assets/icons/projects.png");
 const bookmark = require("../assets/icons/bookmark.png");
 const marker = require("../assets/icons/marker.png");
@@ -137,6 +139,7 @@ export default {
     town,
     newspaper,
     asisstant,
+    languages,
     like,
     replay,
     generate,
@@ -189,6 +192,7 @@ export default {
     sales,
     nurse,
     calculator,
+    interests,
     bookmark,
     salary,
     experience,
