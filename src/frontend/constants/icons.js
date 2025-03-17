@@ -123,12 +123,14 @@ const tick = require("../assets/icons/tick.png");
 const write = require("../assets/icons/write.png");
 const bolt = require("../assets/icons/bolt.png");
 const signal = require("../assets/icons/signal.png");
+const navigate = require("../assets/icons/navigate.png");
 
 
 export default {
     home,
     user,
     okay,
+    navigate,
     bolt,
     signal,
     write,
