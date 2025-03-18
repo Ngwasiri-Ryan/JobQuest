@@ -9,6 +9,7 @@ import { COLORS, FONTS, icons } from '../../constants';
 import Loader from '../../components/loading/Loader';
 import Greetings from '../../components/home/Greetings';
 import { useUserContext } from '../../hooks/UserContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 
@@ -49,7 +50,7 @@ const HomeScreen = ({ route, navigation }) => {
         date_posted: 'all'
       },
       headers: {
-        'x-rapidapi-key': '7fd213d47emshb49cf8bd294a249p1de61ajsn820c90d640ca',
+        'x-rapidapi-key': 'f736cf8705msh35c0443c782013ap143936jsn00ff35ae9803',
         'x-rapidapi-host': 'jsearch.p.rapidapi.com'
       }
     };
@@ -140,7 +141,7 @@ const HomeScreen = ({ route, navigation }) => {
   const remainingJobs = filteredJobs.slice(6);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.profile} onPress={() => navigation.navigate('ProfileScreen')}>
           <Text style={styles.profileText}>{firstLetter}</Text>
@@ -198,7 +199,7 @@ const HomeScreen = ({ route, navigation }) => {
         keyExtractor={(item) => item.job_id || item.id || Math.random().toString(36).substr(2, 9)}
         renderItem={({ item }) => <JobItem item={item} />}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -206,7 +207,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.lightWhite,
   },
   heading: {
     fontSize: 24,
@@ -244,7 +245,7 @@ const styles = StyleSheet.create({
     tintColor: COLORS.white,
   },
     newsContainer: {
-      backgroundColor: '#B3E5FC',
+      backgroundColor: COLORS.black,
       borderRadius: 10,
       alignItems: "center", // Centers content horizontally
       justifyContent: "center", // Centers content vertically
@@ -259,7 +260,7 @@ const styles = StyleSheet.create({
     smallHeading: {
       fontSize: 16,
       fontWeight: "600",
-      color: "#333",
+      color: "#ffff",
       textAlign: "center",
       marginBottom: 12, // Space between text and image
     },

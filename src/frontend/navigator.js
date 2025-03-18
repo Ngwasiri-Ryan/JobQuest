@@ -4,7 +4,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import { UserProvider } from './hooks/UserContext';
 import { icons, COLORS } from './constants';
-import { Image } from 'react-native';
+import { Image, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import HomeScreen from './screens/home/HomeScreen';
 import SplashScreen from './screens/starter/SplashScreen';
@@ -68,44 +69,86 @@ const Tab = createBottomTabNavigator();
 
 
 const BottomTabNavigator = () => {
+  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
-      screenOptions={{
-        tabBarShowLabel: false, // Hide default labels
-        headerShown: false, // Hide header for all stack screens
-        tabBarStyle: {
-          position: 'absolute',
-          bottom: 20, // Adjusted for shadow spacing
-          left: 0,
-          right: 0,
-          elevation: 5, // For Android shadow
-          backgroundColor: '#fff',
-          borderTopColor: 'transparent',
-          height: 60,
-          marginHorizontal: 20,
-          borderRadius: 50,
+    screenOptions={{
+      tabBarShowLabel: false, // Hide default labels
+      headerShown: false, // Hide header for all stack screens
+      tabBarStyle: {
+        position: 'absolute',
+        bottom: insets.bottom ? insets.bottom + 10 : 20, // Adjusts dynamically
+        left: 20, 
+        right: 20,
+        backgroundColor: COLORS.black,
+        borderTopColor: 'transparent',
+        marginHorizontal: 10,
+        paddingTop: 15,
+        height: 60,
+        borderRadius: 50,
+        flexDirection: 'row', // Ensures icons are in a row
+        alignItems: 'center', // Aligns icons to the center vertically
+        justifyContent: 'space-evenly', // Distributes icons evenly across the tab bar
+        paddingHorizontal: 20, // Ensures some spacing around icons
+      },
+    }}
+    
+      >
+     <Tab.Screen
+  name="Home"
+  component={HomeScreen}
+  options={{
+    tabBarIcon: ({ focused }) => (
+      <View
+        style={{
+          width: 40,
+          height: 40,
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderRadius: 20, // Circular shape
+          backgroundColor: focused ? COLORS.white : 'transparent', // White background when active
+        }}
+      >
+        <Image
+          source={icons.home}
+          resizeMode="contain"
+          style={{
+            width: 20,
+            height: 20,
+            tintColor: focused ? COLORS.black : COLORS.white,
+          }}
+        />
+      </View>
+    ),
+  }}
+/>
 
-          // Shadow properties for iOS
-          shadowColor: '#000', // Black shadow
-          shadowOffset: {width: 0, height: 10}, // Offset for the shadow
-          shadowOpacity: 0.1, // Opacity of the shadow (10%)
-          shadowRadius: 10, // Blurring of the shadow
-        },
-      }}>
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
+
+<Tab.Screen
+        name="Map"
+        component={MapScreen}
         options={{
           tabBarIcon: ({focused}) => (
+            <View
+            style={{
+              width: 40,
+              height: 40,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 20, // Circular shape
+              backgroundColor: focused ? COLORS.white : 'transparent', // White background when active
+            }}
+          >
             <Image
-              source={icons.home}
+              source={icons.map}
               resizeMode="contain"
               style={{
-                width: 20,
-                height: 20,
-                tintColor: focused ? COLORS.primary : COLORS.black,
+                width: 25,
+                height: 25,
+                tintColor: focused ? COLORS.black : COLORS.white,
               }}
             />
+             </View>
           ),
         }}
       />
@@ -115,15 +158,26 @@ const BottomTabNavigator = () => {
         component={OnboardingScreen}
         options={{
           tabBarIcon: ({focused}) => (
+            <View
+            style={{
+              width: 40,
+              height: 40,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 20, // Circular shape
+              backgroundColor: focused ? COLORS.white : 'transparent', // White background when active
+            }}
+          >
             <Image
               source={icons.person_cv}
               resizeMode="contain"
               style={{
                 width: 20,
                 height: 20,
-                tintColor: focused ? COLORS.primary : COLORS.black,
+                tintColor: focused ? COLORS.black : COLORS.white,
               }}
             />
+             </View>
           ),
         }}
       />
@@ -133,15 +187,26 @@ const BottomTabNavigator = () => {
         component={ChatScreen}
         options={{
           tabBarIcon: ({focused}) => (
+            <View
+            style={{
+              width: 40,
+              height: 40,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 20, // Circular shape
+              backgroundColor: focused ? COLORS.white : 'transparent', // White background when active
+            }}
+          >
             <Image
               source={icons.messages}
               resizeMode="contain"
               style={{
                 width: 25,
                 height: 25,
-                tintColor: focused ? COLORS.primary : COLORS.black,
+                tintColor: focused ? COLORS.black : COLORS.white,
               }}
             />
+            </View>
           ),
         }}
       />
@@ -151,15 +216,26 @@ const BottomTabNavigator = () => {
         component={AnalyticsScreen}
         options={{
           tabBarIcon: ({focused}) => (
+            <View
+            style={{
+              width: 40,
+              height: 40,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 20, // Circular shape
+              backgroundColor: focused ? COLORS.white : 'transparent', // White background when active
+            }}
+          >
             <Image
               source={icons.history}
               resizeMode="contain"
               style={{
                 width: 20,
                 height: 20,
-                tintColor: focused ? COLORS.primary : COLORS.black,
+                tintColor: focused ? COLORS.black : COLORS.white,
               }}
             />
+            </View>
           ),
         }}
       />
@@ -169,15 +245,26 @@ const BottomTabNavigator = () => {
         component={UserProfileScreen}
         options={{
           tabBarIcon: ({focused}) => (
+            <View
+            style={{
+              width: 40,
+              height: 40,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 20, // Circular shape
+              backgroundColor: focused ? COLORS.white : 'transparent', // White background when active
+            }}
+          >
             <Image
               source={icons.user}
               resizeMode="contain"
               style={{
                 width: 20,
                 height: 20,
-                tintColor: focused ? COLORS.primary : COLORS.black,
+                tintColor: focused ? COLORS.black : COLORS.white,
               }}
             />
+            </View>
           ),
         }}
       />

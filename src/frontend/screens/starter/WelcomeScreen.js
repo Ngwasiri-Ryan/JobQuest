@@ -113,7 +113,7 @@ const WelcomeScreen = ({ navigation }) => {
       {/* Static View with Text and Get Started Button */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>Ready to get started?</Text>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MapScreen')}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('LoginScreen')}>
           <Text style={styles.buttonText}>Get Started</Text>
         </TouchableOpacity>
       </View>
@@ -204,14 +204,15 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: COLORS.primary,
     paddingHorizontal: 30,
-    padding: 15,
-    borderRadius: 50,
-    width: 200,
+    padding: 18,
+    borderRadius: 10,
+    width: 300,
     alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize:18
   },
   
 });

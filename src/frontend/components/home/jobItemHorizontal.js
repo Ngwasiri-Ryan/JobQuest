@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native'
 import { icons, COLORS } from '../../constants';
 const { width, height } = Dimensions.get('window');
 import { useUserContext } from '../../hooks/UserContext';
-import { ViewedJob } from '../../backend/history/viewedJobs';
+import { ViewedJob } from '../../../backend/history/viewedJobs';
 
 const JobItemHorizontal = ({ item }) => {
   
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   employerName: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#000',
     marginBottom: 8,

@@ -5,6 +5,8 @@ import { COLORS, icons, FONTS } from '../../constants';
 import DotLoader from '../../components/loading/DotLoader';
 import { useUserContext } from '../../hooks/UserContext';
 import { saveChatHistory } from '../../../backend/history/chatHistory';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 import axios from 'axios';
@@ -23,6 +25,8 @@ const ChatScreen = () => {
     "What's the latest job update?",
     "How can I apply for a job?",
   ]);
+
+  const insets = useSafeAreaInsets();
 
   // Load chat history from local storage
   useEffect(() => {
@@ -140,7 +144,9 @@ const ChatScreen = () => {
             item.role === 'user' ? styles.userMessage : styles.botMessage,
           ]}
         >
-          <Text style={styles.messageText}>{item.content}</Text>
+          <Text style={[styles.messageText, item.role === 'bot' && styles.botMessageText]}>
+  {item.content}
+</Text>
         </View>
       </View>
       <Text style={styles.timestamp}>{item.timestamp}</Text>
@@ -153,7 +159,7 @@ const ChatScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={[styles.container]}>
       <View style={styles.header}>
         <View style={{display:'flex', flexDirection:'row', gap:2,justifyContent:'center', alignItems:'center', paddingLeft:'35%'}}>
         <Text style={styles.heading}>Questbot</Text>
@@ -161,7 +167,7 @@ const ChatScreen = () => {
         </View>
        
         <TouchableOpacity onPress={clearChat} style={styles.clearButton}>
-        <Image source={icons.broom} style={styles.botImage} />
+        <Image source={icons.broom} style={[styles.botImage,{tintColor:'white'}]} />
         </TouchableOpacity>
       </View>
       <View style={{ marginHorizontal: 10, flex: 1 }}>
@@ -211,7 +217,7 @@ const ChatScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -221,7 +227,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffff',
-    paddingBottom: 80,
+    paddingBottom:80,
   },
   clearButton: {
     left:60,
@@ -230,10 +236,13 @@ const styles = StyleSheet.create({
   header: {
     width:'100%',
     flexDirection: 'row',
+    top:0,
+    left:0,
     alignItems: 'center',
+    position:'absolute',
     display:'flex',
     marginBottom: 5,
-    backgroundColor: COLORS.white, // Make sure the background is set
+    backgroundColor: COLORS.black, // Make sure the background is set
     padding: 20, // Add some padding for better touch targets
     ...Platform.select({
       ios: {
@@ -248,12 +257,13 @@ const styles = StyleSheet.create({
     }),
   },
   heading: {
-    color: COLORS.black,
+    color: COLORS.white,
     ...FONTS.h3,
   },
   chatContainer: {
     flex: 1,
-    marginBottom:50,
+    marginTop:70,
+    paddingHorizontal:10,
   },
   text:{
    color:COLORS.black,
@@ -310,17 +320,24 @@ const styles = StyleSheet.create({
   },
   userMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: '#87CEEB',
+    color:COLORS.white,
+    backgroundColor: COLORS.black,
+    borderRadius:10,
+    borderWidth:1,
+    borderColor: '#DDD',
+  },
+  messageText: {
+    color: '#fff', // Default for user messages
+    fontSize: 16,
+  },
+  botMessageText: {
+    color: COLORS.black, // Override for bot messages
   },
   botMessage: {
     alignSelf: 'flex-start',
     backgroundColor: '#FFF',
     borderColor: '#DDD',
     borderWidth: 1,
-  },
-  messageText: {
-    fontSize: 16,
-    color:COLORS.black
   },
   inputContainer: {
     flexDirection: 'row',
@@ -342,8 +359,8 @@ const styles = StyleSheet.create({
     color:COLORS.black,
   },
   sendButton: {
-    backgroundColor: COLORS.secondary,
-    padding: 10,
+    backgroundColor: '#7F5AF0',
+    padding: 15,
     borderRadius: 50,
     justifyContent:'center',
     alignContent:'center'
@@ -384,4 +401,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width:'70%'
   },
+
 });
