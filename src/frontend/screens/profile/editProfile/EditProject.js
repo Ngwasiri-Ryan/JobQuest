@@ -71,8 +71,10 @@ const EditProject = ({ route, navigation }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image source={icons.back} style={styles.inputIcon} />
         </TouchableOpacity>
+      </View>
 
-        <Text style={styles.title}>Edit Projects</Text>
+      <View>
+      <Text style={styles.title}>Edit Projects</Text>
       </View>
 
       {editedProjects.map((project, index) => (
@@ -159,6 +161,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: width * 0.05,
+    paddingTop:20,
+    paddingBottom:20,
   },
   deleteIcon: {
     width: 20,

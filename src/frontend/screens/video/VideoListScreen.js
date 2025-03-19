@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     backgroundColor: "white",
     elevation: 4, // Gives shadow effect on Android
-    backgroundColor:'#121212',
+    backgroundColor:COLORS.black,
     paddingTop:40
   },
   headerTitle: {

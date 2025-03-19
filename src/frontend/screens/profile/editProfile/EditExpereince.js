@@ -68,7 +68,9 @@ const EditExperience = ({ route, navigation }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image source={icons.back} style={styles.inputIcon} />
         </TouchableOpacity>
+      </View>
 
+      <View> 
         <Text style={styles.title}>Edit Experience</Text>
       </View>
 
@@ -189,6 +191,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: width * 0.05,
+    paddingTop:20,
+    paddingBottom:20,
   },
   deleteIcon: {
     width: 20,
@@ -202,7 +206,7 @@ const styles = StyleSheet.create({
     marginBottom: height * 0.04,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 20,
+    borderRadius: 10,
   },
   buttonText: {
     ...FONTS.body2,

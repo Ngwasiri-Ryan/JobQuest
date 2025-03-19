@@ -60,8 +60,12 @@ const EditInterests = ({ route, navigation }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image source={icons.back} style={styles.inputIcon} />
         </TouchableOpacity>
-        <Text style={styles.title}>Edit Interests</Text>
+       
       </View>
+
+     <View>
+      <Text style={styles.title}>Edit Interests</Text>
+     </View>
 
       {editedInterests.map((interest, index) => (
         <View key={index} style={styles.card}>
@@ -136,6 +140,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: width * 0.05,
+    paddingTop:20,
+    paddingBottom:20,
   },
   deleteIcon: {
     width: 20,
