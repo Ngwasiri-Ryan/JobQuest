@@ -271,10 +271,10 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderBottomWidth: 2,
-    borderBottomColor: COLORS.primary,
+    borderBottomColor: COLORS.teal,
   },
   activeTabText: {
-    color: COLORS.primary,
+    color: COLORS.teal,
     fontWeight: 'bold',
   },
   tabText: {

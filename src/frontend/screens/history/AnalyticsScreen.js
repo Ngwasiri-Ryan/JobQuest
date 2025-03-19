@@ -6,11 +6,13 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { COLORS, icons, FONTS } from '../../constants';
 import AnalysisTab from './AnalysisTab';
 import ListTab from './ListTab';
 import ActivitiesTab from './ActivitiesTab';
+
 
 
 const AnalyticsScreen = ({navigation}) => {
@@ -50,10 +52,10 @@ const AnalyticsScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       {/* First Section */}
-      <View style={styles.whitebackground}>
+      <SafeAreaView style={styles.whitebackground}>
         <View style={styles.header}>
           <TouchableOpacity onPress={goBack}>
-          <Image source={icons.back} style={styles.icon} />
+          <Image source={icons.back} style={[styles.icon, {tintColor:'white'}]} />
           </TouchableOpacity>
           <Image source={icons.analytics} style={styles.icon} />
         </View>
@@ -73,7 +75,7 @@ const AnalyticsScreen = ({navigation}) => {
             </View>
           </View>
         </View>
-      </View>
+      </SafeAreaView>
 
       {/* Tabs */}
       <View style={styles.tab}>
@@ -154,9 +156,11 @@ const styles = StyleSheet.create({
     width: 30,
   },
   whitebackground: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.black,
     paddingBottom: 20,
     paddingHorizontal:15,
+    borderBottomRightRadius:20,
+    borderBottomLeftRadius:20,
   },
   header: {
     display: 'flex',
@@ -167,12 +171,12 @@ const styles = StyleSheet.create({
   },
   haedingText: {
     ...FONTS.h2,
-    color: COLORS.black,
+    color: COLORS.white,
   },
   smallText: {
     ...FONTS.body3,
     marginBottom: 20,
-    color: COLORS.black,
+    color: COLORS.white,
   },
   calendarIconHolder: {
     backgroundColor: COLORS.lightGray3,
@@ -191,16 +195,16 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   dateInfo: {
-    top: 5,
+    top: 2,
   },
   text:{
     ...FONTS.h5,
-    color:COLORS.darkgray,
+    color:COLORS.white,
     top:5,
   },
   dateText: {
     ...FONTS.h4,
-    color:COLORS.black,
+    color:COLORS.white,
   },
   categoryItemHolder: {
     padding: 10,

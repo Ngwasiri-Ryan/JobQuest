@@ -1,12 +1,12 @@
 import React from "react";
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, TextInput } from "react-native";
 import videos from "../../data/video";
-import { icons } from "../../constants";
+import { icons, COLORS } from "../../constants";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const VideoListScreen = ({ navigation }) => {
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -44,7 +44,7 @@ const VideoListScreen = ({ navigation }) => {
           </TouchableOpacity>
         )}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -62,11 +62,13 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     backgroundColor: "white",
     elevation: 4, // Gives shadow effect on Android
+    backgroundColor:'#121212',
+    paddingTop:40
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#333",
+    color: COLORS.white,
   },
   headerIcons: {
     flexDirection: "row",
@@ -139,6 +141,7 @@ const styles = StyleSheet.create({
   backIcon:{
     height:25,
     width:25,
+    tintColor:'white'
   }
 });
 

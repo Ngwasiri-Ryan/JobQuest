@@ -342,10 +342,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   section: {
-    backgroundColor: '#E2E9F8',
+    backgroundColor: COLORS.white,
     borderRadius: 10,
     padding: 15,
     marginBottom: 15,
+    elevation:5,
   },
   row: {
     display: 'flex',

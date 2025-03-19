@@ -6,6 +6,12 @@ export const COLORS = {
     
     primary: "#263238", // blue
     secondary: "#0269FE", // secondary blue
+   
+    teal: '#00BFA5',     // Modern & fresh CTA
+        // Professional & vibran
+    amber: '#FFAB00', 
+
+    cyan: '#00ACC1',
 
     // colors
     black: "#263238",

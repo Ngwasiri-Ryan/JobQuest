@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   search: {
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.teal,
     padding: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   selectedCategoryButton: {
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.BLACK,
     borderColor: 'transparent',
   },
   categoryText: {
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     alignItems:'center',
     justifyContent:'center',
     marginRight: 10,
-    borderColor: '#000',
+    borderColor:'#DDD',
     borderWidth: 1,
   },
   profile: {

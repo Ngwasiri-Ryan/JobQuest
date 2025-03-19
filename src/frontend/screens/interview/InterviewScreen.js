@@ -10,13 +10,17 @@ import {
   StyleSheet,
 } from 'react-native';
 import axios from 'axios';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {COLORS, icons, images} from '../../constants'; // Ensure this path is correct
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const API_KEY = 'AIzaSyBPvI-nkHg8DlJgCVcfI3lQXRZcTTcp7c4';
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
 const InterviewScreen = ({navigation}) => {
+
+  const insets = useSafeAreaInsets();
+  
   // State Management
   const [topic, setTopic] = useState('');
   const [questions, setQuestions] = useState([]);
@@ -151,7 +155,7 @@ const InterviewScreen = ({navigation}) => {
 
   // Render Components
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container]}>
       <View style={{paddingVertical: 10, flex: 1}}>
         <View style={styles.header}>
         <TouchableOpacity onPress={()=> navigation.goBack()}>
@@ -212,23 +216,28 @@ const InterviewScreen = ({navigation}) => {
               </View>
             </View>
           ) : (
-            // Questions and Answers View
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-              <View style={styles.chatHeader}>
-                <TouchableOpacity onPress={goBack}>
-                  <Image source={icons.back} style={styles.backIcon} />
-                </TouchableOpacity>
-                <Image source={icons.chatbot} style={styles.chatIcon} />
-                <Text style={styles.chatHeaderText}>
-                  Let's get this interview started!
-                </Text>
-              </View>
-
-              <Text style={styles.instructionsText}>
-                Answer these interview questions so the bot can grade them
-                accordingly.
+            <View style={{flex:1}}>
+            {/* Fixed Header */}
+            <View style={styles.chatHeader}>
+              <TouchableOpacity onPress={goBack}>
+                <Image source={icons.back} style={styles.backIcon} />
+              </TouchableOpacity>
+              <Image source={icons.chatbot} style={styles.chatIcon} />
+              <Text style={styles.chatHeaderText}>
+                Let's get this interview started!
               </Text>
-
+            </View>
+          
+            {/* Fixed Instructions */}
+            <Text style={styles.instructionsText}>
+              Answer these interview questions so the bot can grade them accordingly.
+            </Text>
+          
+            {/* Scrollable Questions and Answers */}
+            <ScrollView 
+              contentContainerStyle={styles.scrollContainer} 
+              showsVerticalScrollIndicator={false}
+            >
               {loading && (
                 <ActivityIndicator
                   size="large"
@@ -236,7 +245,7 @@ const InterviewScreen = ({navigation}) => {
                   style={styles.loadingIndicator}
                 />
               )}
-
+          
               {questions.map((q, index) => (
                 <View key={index} style={styles.questionContainer}>
                   <Text style={styles.questionText}>{q}</Text>
@@ -254,7 +263,7 @@ const InterviewScreen = ({navigation}) => {
                   />
                 </View>
               ))}
-
+          
               <View style={styles.submitButtonContainer}>
                 <TouchableOpacity
                   onPress={submitAnswers}
@@ -268,6 +277,7 @@ const InterviewScreen = ({navigation}) => {
                 </TouchableOpacity>
               </View>
             </ScrollView>
+          </View>
           )
         ) : (
           // Graded View
@@ -308,7 +318,7 @@ const InterviewScreen = ({navigation}) => {
           </View>
         )}
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -320,20 +330,35 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     paddingBottom: 50,
+    position:'absolute'
   },
   header: {
-    display: 'flex',
-    flexDirection: 'row',
-    paddingVertical: 15,
-    paddingHorizontal:15,
-    backgroundColor: COLORS.white,
-    zIndex: 20,
-    width: '100%',
-    position: 'relative',
+     width:'100%',
+        flexDirection: 'row',
+        top:0,
+        left:0,
+        alignItems: 'center',
+        position:'absolute',
+        display:'flex',
+        paddingTop:40,
+        marginBottom: 5,
+        backgroundColor: COLORS.black, // Make sure the background is set
+        padding: 20, // Add some padding for better touch targets
+        ...Platform.select({
+          ios: {
+            shadowColor: '#000', // Color of the shadow
+            shadowOffset: { width: 0, height: 2 }, // Position of the shadow
+            shadowOpacity: 0.2, // Opacity of the shadow
+            shadowRadius: 4, // Blur radius of the shadow
+          },
+          android: {
+            elevation: 5, // Shadow elevation for Android
+          },
+        }),
   },
   headerText: {
-    fontSize: 20,
-    color: COLORS.black,
+    fontSize: 25,
+    color: COLORS.white,
    
   },
   headerBox:{
@@ -376,6 +401,7 @@ const styles = StyleSheet.create({
   back: {
     height: 25,
     width: 30,
+    tintColor:COLORS.white
   },
   inputContainer: {
     flexDirection: 'row',
@@ -401,7 +427,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#263238',
+    backgroundColor: COLORS.teal,
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 10,
@@ -438,7 +464,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 40,
     width: '100%',
     paddingVertical: 10,
     alignItems: 'center',
@@ -486,6 +512,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     width: '100%',
     height: '100%',
+    position:'absolute'
   },
   evaluationHeader: {
     fontSize: 40,
@@ -562,8 +589,8 @@ const styles = StyleSheet.create({
   },
   okButton: {
     backgroundColor: '#263238',
-    paddingVertical: 12,
-    paddingHorizontal: 25,
+    paddingVertical: 15,
+    paddingHorizontal: 29,
     borderRadius: 10,
     alignItems: 'center',
     marginTop: 20,
@@ -572,7 +599,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
     width: '100%',
-    bottom: 5,
+    bottom: 50,
     position: 'absolute',
   },
   okButtonText: {
@@ -585,6 +612,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(20, 174, 92, 0.27)',
+    top:80
   },
   chatHeaderText: {
     fontSize: 16,
@@ -594,9 +622,10 @@ const styles = StyleSheet.create({
   },
   instructionsText: {
     fontSize: 18,
-    color: COLORS.black,
+    color:'transparent',
     fontStyle: 'italic',
     padding: 20,
+    position:'fixed'
   },
   questionIcon: {
     height: 20,

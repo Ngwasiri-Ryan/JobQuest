@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 0,
     flex: 1,
-    marginBottom:70
+    marginBottom:70,
   },
   mid_container:{
     flex: 1,
@@ -173,16 +173,14 @@ no_saved_jobs:{
     color: COLORS.darkgray,
     ...FONTS.body4,
   },
-  jobItem: {
-    backgroundColor: COLORS.white,
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 20,
-    borderBottomColor: COLORS.black,
-     },
+  jobItem: {  
+    backgroundColor: COLORS.white,  
+    padding: 15,  
+    display: 'flex',  
+    flexDirection: 'row',  
+    gap: 20,  
+    borderBottomWidth:1
+},
   jobTitle: {
     ...FONTS.h5,
     color: COLORS.black,

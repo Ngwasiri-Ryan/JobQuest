@@ -45,9 +45,16 @@ const InterviewPrepScreen = ({ navigation }) => {  // Add navigation prop if you
   return (
     <View style={styles.container}>
       {/* Back Button */}
+      <View style={styles.header}>
       <TouchableOpacity style={styles.backButton} onPress={goBack}>
         <Image source={icons.back} style={styles.iconBack} />
       </TouchableOpacity>
+      <View style={{width:'100%', alignItems:'center', justifyContent:'center'}}>
+      <Text style={{textAlign:'center', color:COLORS.white, fontSize:25}}>Interview Flash Cards</Text>
+      </View>
+     
+      </View>
+      
 
       <Text style={styles.title}>Ace Your Interview</Text>
       <Text style={styles.subtitle}>Practice commonly asked interview questions</Text>
@@ -105,21 +112,46 @@ const InterviewPrepScreen = ({ navigation }) => {  // Add navigation prop if you
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#f7f7f7",
   },
+  header: {
+    width:'100%',
+       flexDirection: 'row',
+       top:0,
+       left:0,
+       alignItems: 'center',
+       position:'absolute',
+       display:'flex',
+       paddingTop:40,
+       marginBottom: 5,
+       backgroundColor: COLORS.black, // Make sure the background is set
+       padding: 20, // Add some padding for better touch targets
+       ...Platform.select({
+         ios: {
+           shadowColor: '#000', // Color of the shadow
+           shadowOffset: { width: 0, height: 2 }, // Position of the shadow
+           shadowOpacity: 0.2, // Opacity of the shadow
+           shadowRadius: 4, // Blur radius of the shadow
+         },
+         android: {
+           elevation: 5, // Shadow elevation for Android
+         },
+       }),
+ },
   backButton: {
-    position: "absolute",
     top: 40,
     left: 20,
-    zIndex: 10,  // Ensure it stays on top of other components
+    zIndex: 10,
+    tintColor:COLORS.white
+    // Ensure it stays on top of other components
   },
   iconBack: {
     width: 25,
     height: 25,
-    tintColor: "#333",
+    tintColor: COLORS.white,
+    top:-40,
   },
   title: {
     fontSize: 32,
@@ -180,7 +212,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   controlButton: {
-    backgroundColor: "#4A90E2",
+    backgroundColor: COLORS.green,
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25,
@@ -188,11 +220,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginHorizontal: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
   },
   controlButtonText: {
     fontSize: 18,
