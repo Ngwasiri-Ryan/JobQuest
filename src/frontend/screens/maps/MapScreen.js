@@ -9,23 +9,36 @@ import {
   Platform,
   TextInput,
   Text,
+  Modal,
 } from "react-native";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import Geolocation from "@react-native-community/geolocation";
+import axios from "axios";
+import { COLORS } from "../../constants";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyBpxYpVUtQlXjQgBCJNDvLkADlgTQ9IbLs";
+const ADZUNA_APP_ID = "f6033e84";
+const ADZUNA_APP_KEY = "a94e6316621ed540f5006c78c7ba76e0";
 
 const MapScreen = () => {
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [searchText, setSearchText] = useState("");
-  const [searchedLocation, setSearchedLocation] = useState(null);
+  const [startLocation, setStartLocation] = useState("");
+  const [endLocation, setEndLocation] = useState("");
+  const [startCoordinates, setStartCoordinates] = useState(null);
+  const [endCoordinates, setEndCoordinates] = useState(null);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
-  const [darkMode, setDarkMode] = useState(false);
+  const [jobLocations, setJobLocations] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchedLocation, setSearchedLocation] = useState(null);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [commuteDetails, setCommuteDetails] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const mapRef = useRef(null);
 
   useEffect(() => {
     requestLocationPermission();
+    fetchJobs();
   }, []);
 
   const requestLocationPermission = async () => {
@@ -56,39 +69,51 @@ const MapScreen = () => {
     );
   };
 
-  const searchLocation = async () => {
-    if (!searchText.trim()) return;
-    
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(searchText)}&key=${GOOGLE_MAPS_API_KEY}`;
-    
+  const fetchJobs = async () => {
+    const COUNTRIES = ["at", "au", "be", "br", "ca", "ch", "de", "es", "fr", "gb", "in", "it", "mx", "nl", "nz", "pl", "sg", "us", "za"];
+    let allJobs = [];
+
+    for (let country of COUNTRIES) {
+      try {
+        const response = await axios.get(
+          `https://api.adzuna.com/v1/api/jobs/${country}/search/1`,
+          {
+            params: {
+              app_id: ADZUNA_APP_ID,
+              app_key: ADZUNA_APP_KEY,
+              results_per_page: 20,
+            },
+          }
+        );
+        allJobs.push(...response.data.results);
+      } catch (error) {
+        console.error(`Error fetching jobs for ${country}:`, error.message);
+      }
+    }
+
+    const validJobs = allJobs.filter((job) => job.latitude && job.longitude);
+    setJobLocations(validJobs);
+  };
+
+  const geocodeAddress = async (address) => {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      address
+    )}&key=${GOOGLE_MAPS_API_KEY}`;
+
     try {
       const response = await fetch(url);
       const data = await response.json();
 
       if (data.status === "OK") {
         const { lat, lng } = data.results[0].geometry.location;
-        setSearchedLocation({
-          latitude: lat,
-          longitude: lng,
-          title: data.results[0].formatted_address,
-        });
-
-        mapRef.current.animateToRegion({
-          latitude: lat,
-          longitude: lng,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        });
-
-        // Fetch route from current location to searched location
-        if (location) {
-          fetchRoute(location, { latitude: lat, longitude: lng });
-        }
+        return { latitude: lat, longitude: lng };
       } else {
-        Alert.alert("Location Not Found", "Try a different search term.");
+        Alert.alert("Location Not Found", "Try a different address.");
+        return null;
       }
     } catch (error) {
-      console.error("Error searching location:", error);
+      console.error("Error geocoding address:", error);
+      return null;
     }
   };
 
@@ -100,18 +125,112 @@ const MapScreen = () => {
       const data = await response.json();
 
       if (data.routes.length > 0) {
-        const route = data.routes[0].legs[0];
-        const points = route.steps.map((step) => ({
-          latitude: step.start_location.lat,
-          longitude: step.start_location.lng,
-        }));
+        const points = data.routes[0].overview_polyline.points;
+        const decodedPoints = decodePolyline(points);
+        setRouteCoordinates(decodedPoints);
 
-        setRouteCoordinates(points);
+        // Extract distance and duration
+        const distance = data.routes[0].legs[0].distance.text;
+        const duration = data.routes[0].legs[0].duration.text;
+        setCommuteDetails({ distance, duration });
       } else {
         Alert.alert("Route Not Found", "No route available.");
       }
     } catch (error) {
       console.error("Error fetching route:", error);
+    }
+  };
+
+  const decodePolyline = (encoded) => {
+    const points = [];
+    let index = 0,
+      len = encoded.length;
+    let lat = 0,
+      lng = 0;
+
+    while (index < len) {
+      let b,
+        shift = 0,
+        result = 0;
+      do {
+        b = encoded.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      const dlat = (result & 1) !== 0 ? ~(result >> 1) : result >> 1;
+      lat += dlat;
+
+      shift = 0;
+      result = 0;
+      do {
+        b = encoded.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      const dlng = (result & 1) !== 0 ? ~(result >> 1) : result >> 1;
+      lng += dlng;
+
+      points.push({ latitude: lat / 1e5, longitude: lng / 1e5 });
+    }
+
+    return points;
+  };
+
+  const handleRoute = async () => {
+    if (!startLocation || !endLocation) {
+      Alert.alert("Error", "Please enter both start and end locations.");
+      return;
+    }
+
+    const start = await geocodeAddress(startLocation);
+    const end = await geocodeAddress(endLocation);
+
+    if (start && end) {
+      setStartCoordinates(start);
+      setEndCoordinates(end);
+      fetchRoute(start, end);
+
+      mapRef.current.fitToCoordinates([start, end], {
+        edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+        animated: true,
+      });
+    }
+  };
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
+
+    const coordinates = await geocodeAddress(searchQuery);
+    if (coordinates) {
+      setSearchedLocation(coordinates);
+      mapRef.current.animateToRegion({
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+      });
+    }
+  };
+
+  const zoomToCurrentLocation = () => {
+    if (location) {
+      mapRef.current.animateToRegion({
+        latitude: location.latitude,
+        longitude: location.longitude,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+      });
+    }
+  };
+
+  const handleJobMarkerPress = async (job) => {
+    setSelectedJob(job);
+    if (location) {
+      await fetchRoute(location, {
+        latitude: job.latitude,
+        longitude: job.longitude,
+      });
+      setModalVisible(true);
     }
   };
 
@@ -131,35 +250,126 @@ const MapScreen = () => {
               latitudeDelta: 0.05,
               longitudeDelta: 0.05,
             }}
-            customMapStyle={darkMode ? darkMapStyle : []}
           >
+            {/* Display job locations as green markers */}
+            {jobLocations.map((job, index) => (
+              <Marker
+                key={index}
+                coordinate={{
+                  latitude: job.latitude,
+                  longitude: job.longitude,
+                }}
+                title={job.company.display_name}
+                description={job.title}
+                pinColor="green"
+                onPress={() => handleJobMarkerPress(job)}
+              />
+            ))}
+
+            {/* Red marker for user's current location */}
             {location && (
-              <Marker coordinate={location} title="You are here" pinColor="blue" />
+              <Marker
+                coordinate={{
+                  latitude: location.latitude,
+                  longitude: location.longitude,
+                }}
+                title="Your Location"
+                pinColor="red"
+              />
             )}
 
+            {startCoordinates && (
+              <Marker coordinate={startCoordinates} title="Start Location" />
+            )}
+            {endCoordinates && (
+              <Marker coordinate={endCoordinates} title="End Location" />
+            )}
             {searchedLocation && (
-              <Marker coordinate={searchedLocation} title={searchedLocation.title} />
+              <Marker coordinate={searchedLocation} title="Searched Location" />
             )}
-
             {routeCoordinates.length > 0 && (
-              <Polyline coordinates={routeCoordinates} strokeColor="#5E63FF" strokeWidth={4} />
+              <Polyline
+                coordinates={routeCoordinates}
+                strokeColor="#5E63FF"
+                strokeWidth={4}
+              />
             )}
           </MapView>
 
-          {/* Search Bar */}
+          {/* Search and Route Container */}
           <View style={styles.searchContainer}>
             <TextInput
               style={styles.searchInput}
               placeholder="Search for a location..."
-              value={searchText}
-              onChangeText={setSearchText}
-              onSubmitEditing={searchLocation}
-              returnKeyType="search"
+              placeholderTextColor={COLORS.black}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              onSubmitEditing={handleSearch}
             />
-            <TouchableOpacity style={styles.searchButton} onPress={searchLocation}>
-              <Text style={styles.buttonText}>Go</Text>
+            <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+              <Text style={styles.buttonText}>Search</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.currentLocationButton}
+              onPress={zoomToCurrentLocation}
+            >
+              <Text style={styles.buttonText}>My Location</Text>
             </TouchableOpacity>
           </View>
+
+          {/* Start and End Location Inputs */}
+          <View style={styles.routeContainer}>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Enter start location..."
+                placeholderTextColor={COLORS.black}
+              value={startLocation}
+              onChangeText={setStartLocation}
+            />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Enter end location..."
+              placeholderTextColor={COLORS.black}
+              value={endLocation}
+              onChangeText={setEndLocation}
+            />
+            <TouchableOpacity style={styles.routeButton} onPress={handleRoute}>
+              <Text style={styles.buttonText}>Route</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Job Details Modal */}
+          <Modal
+            visible={modalVisible}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>
+                  {selectedJob?.company.display_name}
+                </Text>
+                <Text style={styles.modalSubtitle}>{selectedJob?.title}</Text>
+                {commuteDetails && (
+                  <>
+                    <Text style={styles.modalText}>
+                      Distance: {commuteDetails.distance}
+                    </Text>
+                    <Text style={styles.modalText}>
+                      Duration: {commuteDetails.duration}
+                    </Text>
+                  </>
+                )}
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.buttonText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
         </>
       )}
     </View>
@@ -173,36 +383,79 @@ const styles = StyleSheet.create({
   searchContainer: {
     position: "absolute",
     top: 50,
-    flexDirection: "row",
     backgroundColor: "white",
     borderRadius: 10,
     padding: 10,
     marginHorizontal: 20,
-    alignItems: "center",
     elevation: 5,
+    flexDirection: "row",
+    alignItems: "center",
   },
   searchInput: {
     flex: 1,
     height: 40,
     borderRadius: 5,
     paddingHorizontal: 10,
-    backgroundColor: "#F5F5F5",
+    placeholder:COLORS.black,
+    marginBottom: 10,
   },
   searchButton: {
     backgroundColor: "#5E63FF",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+    padding: 10,
     borderRadius: 5,
     marginLeft: 10,
   },
-  buttonText: { color: "white", fontWeight: "bold" },
-  darkModeButton: {
-    position: "absolute",
-    bottom: 30,
-    right: 20,
+  currentLocationButton: {
     backgroundColor: "#5E63FF",
-    padding: 15,
-    borderRadius: 50,
+    padding: 10,
+    borderRadius: 5,
+    marginLeft: 10,
+  },
+  routeContainer: {
+    position: "absolute",
+    bottom: 50,
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 10,
+    marginHorizontal: 20,
+    elevation: 5,
+  },
+  routeButton: {
+    backgroundColor: "#5E63FF",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  buttonText: { color: "white", fontWeight: "bold" },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    width: "80%",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  modalSubtitle: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  modalButton: {
+    backgroundColor: "#5E63FF",
+    padding: 10,
+    borderRadius: 5,
     alignItems: "center",
   },
 });
