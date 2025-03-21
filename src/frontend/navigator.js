@@ -43,6 +43,10 @@ import InterviewScreen from './screens/interview/InterviewScreen';
 import MapScreen from './screens/maps/MapScreen';
 
 
+import DocumentBuilderScreen from './screens/resume/DocumentBuilderScreen';
+import CoverLetterPreviewScreen from './screens/resume/cover_letter/CoverLetterPreviewScreen';
+import CoverLetterStepper from './screens/resume/cover_letter/CoverLetterStepper';
+
 
 //profile edit screen
 import EditPersonalInfo from './screens/profile/editProfile/EditPersonalInfo';
@@ -341,6 +345,10 @@ const Navigator = () => {
           <Stack.Screen name="MapScreen" component={MapScreen} />
 
           <Stack.Screen name="pdfViewer" component={ResumePDFScreen} />
+
+          <Stack.Screen name="DocumentBuilderScreen" component={ DocumentBuilderScreen} />
+          <Stack.Screen name="CoverLetterStepper" component={ CoverLetterStepper} />
+          <Stack.Screen name="CoverLetterPreviewScreen" component={CoverLetterPreviewScreen} />
 
 
 

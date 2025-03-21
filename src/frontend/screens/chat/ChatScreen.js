@@ -238,6 +238,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     top:0,
     left:0,
+    paddingTop:30,
     alignItems: 'center',
     position:'absolute',
     display:'flex',
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     color: COLORS.white,
-    ...FONTS.h3,
+    fontSize:25,
   },
   chatContainer: {
     flex: 1,

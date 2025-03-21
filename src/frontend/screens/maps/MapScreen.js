@@ -7,134 +7,26 @@ import {
   Alert,
   PermissionsAndroid,
   Platform,
-  Image,
+  TextInput,
   Text,
-  Animated,
 } from "react-native";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import Geolocation from "@react-native-community/geolocation";
-import { icons } from "../../constants";
-import MapSearch from "./MapSearch";
+
+const GOOGLE_MAPS_API_KEY = "AIzaSyBpxYpVUtQlXjQgBCJNDvLkADlgTQ9IbLs";
 
 const MapScreen = () => {
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showJobs, setShowJobs] = useState(true);
-  const [searchResults, setSearchResults] = useState([]);
-  const [notificationVisible, setNotificationVisible] = useState(false);
-  const [notificationText, setNotificationText] = useState("");
-  const [routeCoordinates, setRouteCoordinates] = useState([]); // Store route coordinates
-  const [startLocation, setStartLocation] = useState(null); // Start location for the route
-  const [endLocation, setEndLocation] = useState(null); // End location for the route
+  const [searchText, setSearchText] = useState("");
+  const [searchedLocation, setSearchedLocation] = useState(null);
+  const [routeCoordinates, setRouteCoordinates] = useState([]);
+  const [darkMode, setDarkMode] = useState(false);
   const mapRef = useRef(null);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     requestLocationPermission();
   }, []);
-
-  // Handle search results
-  useEffect(() => {
-    if (searchResults.length > 0) {
-      const firstResult = searchResults[0];
-      setNotificationText(`Location Found: ${firstResult.title}`);
-      setNotificationVisible(true);
-
-      // Zoom to the location
-      mapRef.current.animateToRegion({
-        latitude: firstResult.latitude,
-        longitude: firstResult.longitude,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      });
-
-      // Animate notification
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }).start(() => {
-        setTimeout(() => {
-          Animated.timing(fadeAnim, {
-            toValue: 0,
-            duration: 500,
-            useNativeDriver: true,
-          }).start(() => setNotificationVisible(false));
-        }, 2000); // Hide after 2 seconds
-      });
-    }
-  }, [searchResults]);
-
-  // Fetch route between two locations
-  const fetchRoute = async (start, end) => {
-    const apiKey = "YOUR_GOOGLE_MAPS_API_KEY"; // Replace with your API key
-    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&key=${apiKey}`;
-
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if (data.routes.length > 0) {
-        const points = data.routes[0].overview_polyline.points;
-        const coordinates = decodePolyline(points); // Decode polyline to coordinates
-        setRouteCoordinates(coordinates);
-      }
-    } catch (error) {
-      console.error("Error fetching route:", error);
-    }
-  };
-
-  // Decode polyline to coordinates
-  const decodePolyline = (polyline) => {
-    const points = [];
-    let index = 0,
-      lat = 0,
-      lng = 0;
-
-    while (index < polyline.length) {
-      let b,
-        shift = 0,
-        result = 0;
-      do {
-        b = polyline.charCodeAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      const dlat = (result & 1) !== 0 ? ~(result >> 1) : result >> 1;
-      lat += dlat;
-
-      shift = 0;
-      result = 0;
-      do {
-        b = polyline.charCodeAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      const dlng = (result & 1) !== 0 ? ~(result >> 1) : result >> 1;
-      lng += dlng;
-
-      points.push({ latitude: lat / 1e5, longitude: lng / 1e5 });
-    }
-
-    return points;
-  };
-
-  // Handle marker press to set start/end location
-  const handleMarkerPress = (coordinate) => {
-    if (!startLocation) {
-      // Set start location
-      setStartLocation(coordinate);
-    } else if (!endLocation) {
-      // Set end location and fetch route
-      setEndLocation(coordinate);
-      fetchRoute(startLocation, coordinate);
-    } else {
-      // Reset and set new start location
-      setStartLocation(coordinate);
-      setEndLocation(null);
-      setRouteCoordinates([]);
-    }
-  };
 
   const requestLocationPermission = async () => {
     if (Platform.OS === "android") {
@@ -142,12 +34,15 @@ const MapScreen = () => {
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
       );
       if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-        Alert.alert("Permission Denied", "Enable location to see your position on the map.");
+        Alert.alert("Permission Denied", "Enable location to use the map.");
         setLoading(false);
         return;
       }
     }
+    updateUserLocation();
+  };
 
+  const updateUserLocation = () => {
     Geolocation.getCurrentPosition(
       (position) => {
         setLocation({
@@ -156,12 +51,68 @@ const MapScreen = () => {
         });
         setLoading(false);
       },
-      (error) => {
-        Alert.alert("Error", error.message);
-        setLoading(false);
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      (error) => console.error("Error fetching location:", error),
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
     );
+  };
+
+  const searchLocation = async () => {
+    if (!searchText.trim()) return;
+    
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(searchText)}&key=${GOOGLE_MAPS_API_KEY}`;
+    
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.status === "OK") {
+        const { lat, lng } = data.results[0].geometry.location;
+        setSearchedLocation({
+          latitude: lat,
+          longitude: lng,
+          title: data.results[0].formatted_address,
+        });
+
+        mapRef.current.animateToRegion({
+          latitude: lat,
+          longitude: lng,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
+
+        // Fetch route from current location to searched location
+        if (location) {
+          fetchRoute(location, { latitude: lat, longitude: lng });
+        }
+      } else {
+        Alert.alert("Location Not Found", "Try a different search term.");
+      }
+    } catch (error) {
+      console.error("Error searching location:", error);
+    }
+  };
+
+  const fetchRoute = async (start, end) => {
+    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&key=${GOOGLE_MAPS_API_KEY}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.routes.length > 0) {
+        const route = data.routes[0].legs[0];
+        const points = route.steps.map((step) => ({
+          latitude: step.start_location.lat,
+          longitude: step.start_location.lng,
+        }));
+
+        setRouteCoordinates(points);
+      } else {
+        Alert.alert("Route Not Found", "No route available.");
+      }
+    } catch (error) {
+      console.error("Error fetching route:", error);
+    }
   };
 
   return (
@@ -170,7 +121,6 @@ const MapScreen = () => {
         <ActivityIndicator size="large" color="#5E63FF" style={styles.loader} />
       ) : (
         <>
-          {/* Map Component */}
           <MapView
             ref={mapRef}
             provider={PROVIDER_GOOGLE}
@@ -181,73 +131,33 @@ const MapScreen = () => {
               latitudeDelta: 0.05,
               longitudeDelta: 0.05,
             }}
+            customMapStyle={darkMode ? darkMapStyle : []}
           >
-            {/* User's Current Location Marker */}
             {location && (
-              <Marker
-                coordinate={{ latitude: location.latitude, longitude: location.longitude }}
-                title="You are here"
-                pinColor="blue"
-              />
+              <Marker coordinate={location} title="You are here" pinColor="blue" />
             )}
 
-            {/* Job Markers (Only show when toggled on) */}
-            {showJobs && (
-              <>
-                <Marker
-                  coordinate={{ latitude: 37.7749, longitude: -122.4194 }}
-                  title="Tech Company Hiring"
-                  description="Software Developer Position"
-                  onPress={() => handleMarkerPress({ latitude: 37.7749, longitude: -122.4194 })}
-                />
-                <Marker
-                  coordinate={{ latitude: 37.7785, longitude: -122.4056 }}
-                  title="Startup Job"
-                  description="UX/UI Designer Position"
-                  onPress={() => handleMarkerPress({ latitude: 37.7785, longitude: -122.4056 })}
-                />
-              </>
+            {searchedLocation && (
+              <Marker coordinate={searchedLocation} title={searchedLocation.title} />
             )}
 
-            {/* Search Result Markers */}
-            {searchResults.map((place, index) => (
-              <Marker
-                key={index}
-                coordinate={{ latitude: place.latitude, longitude: place.longitude }}
-                title={place.title}
-                description={place.address}
-                onPress={() => handleMarkerPress({ latitude: place.latitude, longitude: place.longitude })}
-              />
-            ))}
-
-            {/* Draw Route */}
             {routeCoordinates.length > 0 && (
-              <Polyline
-                coordinates={routeCoordinates}
-                strokeColor="#5E63FF"
-                strokeWidth={4}
-              />
+              <Polyline coordinates={routeCoordinates} strokeColor="#5E63FF" strokeWidth={4} />
             )}
           </MapView>
 
           {/* Search Bar */}
-          <MapSearch onSearchResults={setSearchResults} />
-
-          {/* Notification */}
-          {notificationVisible && (
-            <Animated.View style={[styles.notification, { opacity: fadeAnim }]}>
-              <Text style={styles.notificationText}>{notificationText}</Text>
-            </Animated.View>
-          )}
-
-          {/* Floating Buttons */}
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity style={styles.fab} onPress={requestLocationPermission}>
-              <Image source={icons.navigate} style={[styles.icons, { tintColor: "white" }]} />
-            </TouchableOpacity>
-
-            <TouchableOpacity style={[styles.fab, styles.toggleFab]} onPress={() => setShowJobs(!showJobs)}>
-              <Image source={showJobs ? icons.eyeOff : icons.eye} style={styles.icons} />
+          <View style={styles.searchContainer}>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search for a location..."
+              value={searchText}
+              onChangeText={setSearchText}
+              onSubmitEditing={searchLocation}
+              returnKeyType="search"
+            />
+            <TouchableOpacity style={styles.searchButton} onPress={searchLocation}>
+              <Text style={styles.buttonText}>Go</Text>
             </TouchableOpacity>
           </View>
         </>
@@ -260,43 +170,40 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { width: "100%", height: "100%" },
   loader: { flex: 1, justifyContent: "center", alignItems: "center" },
-  buttonsContainer: {
+  searchContainer: {
+    position: "absolute",
+    top: 50,
+    flexDirection: "row",
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 10,
+    marginHorizontal: 20,
+    alignItems: "center",
+    elevation: 5,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    backgroundColor: "#F5F5F5",
+  },
+  searchButton: {
+    backgroundColor: "#5E63FF",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginLeft: 10,
+  },
+  buttonText: { color: "white", fontWeight: "bold" },
+  darkModeButton: {
     position: "absolute",
     bottom: 30,
     right: 20,
-  },
-  fab: {
     backgroundColor: "#5E63FF",
     padding: 15,
     borderRadius: 50,
     alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 10,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-  },
-  toggleFab: {
-    backgroundColor: "#FF6B6B",
-  },
-  icons: {
-    height: 24,
-    width: 24,
-    tintColor: "#777",
-  },
-  notification: {
-    position: "absolute",
-    bottom: 100,
-    alignSelf: "center",
-    backgroundColor: "#5E63FF",
-    padding: 15,
-    borderRadius: 10,
-  },
-  notificationText: {
-    color: "white",
-    fontSize: 16,
   },
 });
 
